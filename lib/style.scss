@@ -53,6 +53,7 @@ input, textarea {
 button, input[type="submit"], .button {
   background-color: $button-color;
   border: none;
+  font-size: 0.7em;
 
   transition: background-color 0.5s;
 
@@ -156,6 +157,11 @@ header {
   font-weight: 300;
 }
 
+.GrudgesListItem-forgiven {
+  padding-top: 1em;
+  font-size: 0.7em;
+}
+
 .GrudgesListItem-buttons {
   margin: 1em 0;
   padding: 1em;
@@ -195,4 +201,9 @@ header {
 .ActiveGrudge-offense {
   font-size: 1.5em;
   min-height: 60vh;
+}
+
+.bold {
+  font-weight: bold;
+  font-size: 1.2em;
 }
