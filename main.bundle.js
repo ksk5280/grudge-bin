@@ -8155,10 +8155,11 @@
 	            null,
 	            React.createElement(
 	              'h1',
-	              null,
-	              this.props.person
+	              { className: 'header' },
+	              'Bin of Grudges'
 	            ),
 	            React.createElement(CreateGrudge, null),
+	            React.createElement(GrudgeCounts, { grudges: this.state.grudges }),
 	            React.createElement(GrudgesList, { grudges: this.state.grudges })
 	          )
 	        ),
@@ -8184,7 +8185,8 @@
 
 	    _this3.state = {
 	      person: '',
-	      offense: ''
+	      offense: '',
+	      forgiven: false
 	    };
 	    return _this3;
 	  }
@@ -8203,7 +8205,7 @@
 	    value: function createGrudge(e) {
 	      e.preventDefault();
 	      store.create(this.state);
-	      this.setState({ person: '', offense: '' });
+	      this.setState({ person: '', offense: '', forgiven: false });
 	    }
 	  }, {
 	    key: 'render',
@@ -8215,7 +8217,7 @@
 	        { className: 'CreateGrudge' },
 	        React.createElement('input', { className: 'CreateGrudge-person',
 	          name: 'person',
-	          placeholder: 'Name of Offender',
+	          placeholder: 'Name of offender',
 	          value: this.state.person,
 	          onChange: function onChange(e) {
 	            return _this4.updateProperties(e);
@@ -8223,7 +8225,7 @@
 	        }),
 	        React.createElement('textarea', { className: 'CreateGrudge-offense',
 	          name: 'offense',
-	          placeholder: 'Offense',
+	          placeholder: 'Their horrible offense',
 	          value: this.state.offense,
 	          onChange: function onChange(e) {
 	            return _this4.updateProperties(e);
@@ -8259,6 +8261,7 @@
 	  var person = _ref2.person;
 	  var offense = _ref2.offense;
 	  var active = _ref2.active;
+	  var forgiven = _ref2.forgiven;
 
 	  return React.createElement(
 	    'div',
@@ -8275,27 +8278,75 @@
 	    ),
 	    React.createElement(
 	      'div',
+	      { className: 'GrudgesListItem-forgiven' },
+	      React.createElement(
+	        'span',
+	        null,
+	        forgiven ? 'Forgiven... for now' : 'Has not been forgiven!'
+	      )
+	    ),
+	    React.createElement(
+	      'div',
 	      { className: 'GrudgesListItem-buttons' },
+	      React.createElement(
+	        'button',
+	        { onClick: function onClick() {
+	            return store.forgive(id);
+	          } },
+	        'Forgive'
+	      ),
+	      React.createElement(
+	        'button',
+	        { onClick: function onClick() {
+	            return store.condemn(id);
+	          } },
+	        'Condemn'
+	      ),
 	      React.createElement(
 	        'button',
 	        { onClick: function onClick() {
 	            return store.select(id);
 	          } },
 	        'Select'
-	      ),
-	      React.createElement(
-	        'button',
-	        { onClick: function onClick() {
-	            return store.destroy(id);
-	          } },
-	        'Destroy'
 	      )
 	    )
 	  );
 	};
 
-	var ActiveGrudge = function ActiveGrudge(_ref3) {
-	  var grudge = _ref3.grudge;
+	var GrudgeCounts = function GrudgeCounts(_ref3) {
+	  var grudges = _ref3.grudges;
+
+	  var total = grudges.length;
+	  var numForgiven = grudges.filter(function (grudge) {
+	    return grudge.forgiven;
+	  }).length;
+	  var numUnforgiven = total - numForgiven;
+	  return React.createElement(
+	    'div',
+	    { className: 'GrudgeCounts' },
+	    React.createElement(
+	      'li',
+	      null,
+	      'Number of people who have wronged me: ',
+	      total
+	    ),
+	    React.createElement(
+	      'li',
+	      null,
+	      'Number of people who have been forgiven: ',
+	      numForgiven
+	    ),
+	    React.createElement(
+	      'li',
+	      null,
+	      'Number of people who have not been forgiven: ',
+	      numUnforgiven
+	    )
+	  );
+	};
+
+	var ActiveGrudge = function ActiveGrudge(_ref4) {
+	  var grudge = _ref4.grudge;
 
 	  if (!grudge) {
 	    return React.createElement(
@@ -28516,6 +28567,7 @@
 
 	// check localStorage for saved grudges
 	var storedGrudges = localStorage.getItem('grudges');
+
 	if (storedGrudges) {
 	  grudges = JSON.parse(storedGrudges);
 	}
@@ -28528,14 +28580,7 @@
 	  var person = _ref.person;
 	  var offense = _ref.offense;
 
-	  grudges = grudges.concat({ person: person, offense: offense, active: false, id: Date.now() });
-	  store.emit('change', grudges);
-	};
-
-	store.destroy = function (id) {
-	  grudges = grudges.filter(function (grudge) {
-	    return grudge.id !== id;
-	  });
+	  grudges = grudges.concat({ person: person, offense: offense, active: false, id: Date.now(), forgiven: false });
 	  store.emit('change', grudges);
 	};
 
@@ -28559,6 +28604,26 @@
 	store.deselect = function () {
 	  grudges = grudges.map(function (grudge) {
 	    return Object.assign(grudge, { active: false });
+	  });
+	  store.emit('change', grudges);
+	};
+
+	store.forgive = function (id) {
+	  grudges = grudges.map(function (grudge) {
+	    if (grudge.id !== id) {
+	      return grudge;
+	    }
+	    return Object.assign(grudge, { forgiven: true });
+	  });
+	  store.emit('change', grudges);
+	};
+
+	store.condemn = function (id) {
+	  grudges = grudges.map(function (grudge) {
+	    if (grudge.id !== id) {
+	      return grudge;
+	    }
+	    return Object.assign(grudge, { forgiven: false });
 	  });
 	  store.emit('change', grudges);
 	};
@@ -29253,10 +29318,10 @@
 
 	exports = module.exports = __webpack_require__(470)();
 	// imports
-
+	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Titillium+Web);", ""]);
 
 	// module
-	exports.push([module.id, "html {\n  box-sizing: border-box; }\n\nhtml, body {\n  height: 100%;\n  width: 100%;\n  overflow: hidden; }\n\n*, *:before, *:after {\n  box-sizing: inherit; }\n\nbody {\n  margin: 0;\n  padding: 0; }\n\nbody, input, textarea {\n  font: menu; }\n\ninput, textarea {\n  display: block;\n  width: 100%;\n  padding: 5px;\n  background-color: #cdecf0;\n  border: none; }\n  input:not(:last-child), textarea:not(:last-child) {\n    margin-bottom: 0.5rem; }\n  .is-active input, .is-active textarea {\n    background-color: #faefd8; }\n\nbutton, input[type=\"submit\"], .button {\n  background-color: #92d6de;\n  border: none;\n  transition: background-color 0.5s; }\n  button:not(:last-child), input[type=\"submit\"]:not(:last-child), .button:not(:last-child) {\n    margin-right: 0.5em; }\n  button:hover, input[type=\"submit\"]:hover, .button:hover {\n    background-color: #6bc7d2; }\n    .is-active button:hover, .is-active input[type=\"submit\"]:hover, .is-active .button:hover {\n      background-color: #e8b651; }\n      .is-active button:hover:active, .is-active input[type=\"submit\"]:hover:active, .is-active .button:hover:active {\n        background-color: #f4dcab; }\n  button:active, input[type=\"submit\"]:active, .button:active {\n    background-color: #f4dcab; }\n  .is-active button, .is-active input[type=\"submit\"], .is-active .button {\n    background-color: #eec97e; }\n\nheader {\n  margin-bottom: 1rem;\n  font-size: 3em;\n  font-weight: 300;\n  text-align: center; }\n\n.GrudgeBin {\n  display: flex;\n  height: 100vh;\n  width: 100vw;\n  border: 1px solid #CCC; }\n\n.sidebar {\n  flex-grow: 1;\n  padding: 1em;\n  background-color: #f4fbfc;\n  border-right: 1px solid #CCC; }\n\n.main-content {\n  flex-grow: 7; }\n\n.CreateGrudge {\n  padding: 1em;\n  margin: 5px;\n  background-color: #e0f3f6;\n  border: 1px solid #cdecf0;\n  box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.4); }\n\n.CreateGrudge-person, .CreateGrudge-offense {\n  font-size: 1.2em; }\n\n.GrudgesList {\n  margin-top: 2em;\n  padding-top: 1em;\n  border-top: 1px solid #cdecf0; }\n\n.GrudgesListItem {\n  padding: 1em;\n  margin: 5px;\n  background-color: #e8f6f8;\n  border: 1px solid #d5eff2;\n  box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.4); }\n  .GrudgesListItem.is-active {\n    background-color: #f4dcab;\n    border: 1px solid #f1d394; }\n\n.GrudgesListItem-person {\n  margin-bottom: 0.5em;\n  font-weight: 400;\n  font-size: 1.5em; }\n\n.GrudgesListItem-offense {\n  font-weight: 300; }\n\n.GrudgesListItem-buttons {\n  margin: 1em 0;\n  padding: 1em;\n  background-color: #d5eff2; }\n  .is-active .GrudgesListItem-buttons {\n    background-color: #f1d394; }\n\n.ActiveGrudge {\n  padding: 1em; }\n\n.ActiveGrudge-person, .ActiveGrudge-offense {\n  background-color: #f4fbfc;\n  transition: background-color 0.5s; }\n  .ActiveGrudge-person:hover, .ActiveGrudge-offense:hover {\n    background-color: #cdecf0; }\n  .ActiveGrudge-person:focus, .ActiveGrudge-offense:focus {\n    background-color: #f4dcab;\n    outline: none; }\n\n.ActiveGrudge-person {\n  font-weight: 600;\n  font-size: 2em; }\n\n.ActiveGrudge-offense {\n  font-size: 1.5em;\n  min-height: 60vh; }\n", ""]);
+	exports.push([module.id, "html {\n  box-sizing: border-box; }\n\nhtml, body {\n  height: 100%;\n  width: 100%;\n  overflow: hidden; }\n\nbody {\n  margin: 0;\n  padding: 0; }\n\n*, *:before, *:after {\n  box-sizing: inherit; }\n\nbody, input, textarea {\n  font-family: \"Titillium Web\", sans-serif;\n  color: #5a5c51; }\n\n.header {\n  font-size: 2em;\n  padding: 0.3em; }\n\ninput, textarea {\n  display: block;\n  width: 100%;\n  padding: 5px;\n  background-color: #fbf6f0;\n  border: none; }\n  input:not(:last-child), textarea:not(:last-child) {\n    margin-bottom: 0.5rem; }\n  .is-active input, .is-active textarea {\n    background-color: #e2f0ed; }\n\nbutton, input[type=\"submit\"], .button {\n  background-color: #edd9c0;\n  border: none;\n  font-size: 1em;\n  transition: background-color 0.5s; }\n  button:not(:last-child), input[type=\"submit\"]:not(:last-child), .button:not(:last-child) {\n    margin-right: 0.5em; }\n  button:hover, input[type=\"submit\"]:hover, .button:hover {\n    background-color: #e2c198; }\n    .is-active button:hover, .is-active input[type=\"submit\"]:hover, .is-active .button:hover {\n      background-color: #7cbdb0; }\n      .is-active button:hover:active, .is-active input[type=\"submit\"]:hover:active, .is-active .button:hover:active {\n        background-color: #c0dfd9; }\n  button:active, input[type=\"submit\"]:active, .button:active {\n    background-color: #c0dfd9; }\n  .is-active button, .is-active input[type=\"submit\"], .is-active .button {\n    background-color: #9ecec5; }\n\nheader {\n  margin-bottom: 1rem;\n  font-size: 3em;\n  font-weight: 300;\n  text-align: center; }\n\n.GrudgeBin {\n  display: flex;\n  height: 100vh;\n  width: 100vw;\n  border: 1px solid #CCC; }\n\n.sidebar {\n  flex-grow: 1;\n  padding: 1em;\n  background-color: #f8f1e8;\n  border-right: 1px solid #CCC;\n  overflow: auto; }\n\n.main-content {\n  flex-grow: 1; }\n\n.CreateGrudge {\n  padding: 1em;\n  margin: 5px;\n  background-color: white;\n  border: 1px solid #f2f2f2;\n  box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.4); }\n\n.CreateGrudge-person, .CreateGrudge-offense {\n  font-size: 1.2em; }\n\n.GrudgesList {\n  margin-top: 2em;\n  padding-top: 1em;\n  border-top: 1px solid #edd9c0; }\n\n.GrudgesListItem {\n  padding: 1em;\n  margin: 5px;\n  background-color: #fefdfc;\n  border: 1px solid #f8f1e8;\n  box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.4); }\n  .GrudgesListItem.is-active {\n    background-color: #c0dfd9;\n    border: 1px solid #afd6cf; }\n\n.GrudgesListItem-person {\n  margin-bottom: 0.5em;\n  font-weight: 400;\n  font-size: 1.5em; }\n\n.GrudgesListItem-offense {\n  font-weight: 300; }\n\n.GrudgesListItem-forgiven {\n  padding-top: 1em;\n  font-size: 0.7em; }\n\n.GrudgesListItem-buttons {\n  margin: 1em 0;\n  padding: 1em;\n  background-color: #f8f1e8; }\n  .is-active .GrudgesListItem-buttons {\n    background-color: #afd6cf; }\n\n.ActiveGrudge {\n  padding: 1em; }\n\n.ActiveGrudge-person, .ActiveGrudge-offense {\n  background-color: #fbf6f0;\n  transition: background-color 0.5s; }\n  .ActiveGrudge-person:hover, .ActiveGrudge-offense:hover {\n    background-color: #f3f9f8; }\n  .ActiveGrudge-person:focus, .ActiveGrudge-offense:focus {\n    background-color: #c0dfd9;\n    outline: none; }\n\n.ActiveGrudge-person {\n  font-weight: 600;\n  font-size: 4em; }\n\n.ActiveGrudge-offense {\n  font-size: 3em;\n  min-height: 60vh; }\n\n.GrudgeCounts {\n  padding: 1em;\n  margin: 15px 5px;\n  background-color: white;\n  border: 1px solid #f2f2f2;\n  box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.4); }\n\n.GrudgeCounts > li {\n  list-style: none;\n  padding: 15px;\n  font-weight: bold; }\n", ""]);
 
 	// exports
 
