@@ -38,7 +38,6 @@ body, input, textarea {
 }
 
 .header {
-  font-size: 2em;
   padding: 0.3em;
 }
 
@@ -62,7 +61,7 @@ input, textarea {
 button, input[type="submit"], .button {
   background-color: $button-color;
   border: none;
-  font-size: 1em;
+  font-size: 16px;
 
   transition: background-color 0.5s;
 
@@ -94,7 +93,7 @@ button, input[type="submit"], .button {
 header {
   margin-bottom: 1rem;
 
-  font-size: 3em;
+  font-size: 32px;
   font-weight: 300;
   text-align: center;
 }
@@ -123,7 +122,7 @@ header {
 }
 
 .CreateGrudge {
-  padding: 1em;
+  padding: 0.8em;
   margin: 5px;
 
   background-color: $create-grudge-color;
@@ -133,17 +132,17 @@ header {
 }
 
 .CreateGrudge-person, .CreateGrudge-offense {
-  font-size: 1.2em;
+  font-size: 24px;
 }
 
 .GrudgesList {
-  margin-top: 2em;
+  margin-top: 1em;
   padding-top: 1em;
   border-top: 1px solid darken($sidebar-color, 10);
 }
 
 .GrudgesListItem {
-  padding: 1em;
+  padding: 10px;
   margin: 5px;
 
   background-color: $grudge-list-item-color;
@@ -161,26 +160,31 @@ header {
   margin-bottom: 0.5em;
 
   font-weight: 400;
-  font-size: 1.5em;
+  font-size: 28px;
 }
 
 .GrudgesListItem-offense {
   font-weight: 300;
+  font-size: 24px;
 }
 
 .GrudgesListItem-forgiven {
   padding-top: 1em;
-  font-size: 0.7em;
+  font-size: 20px;
 }
 
 .GrudgesListItem-buttons {
-  margin: 1em 0;
-  padding: 1em;
+  margin: 10px 0;
+  padding: 10px;
 
   background-color: darken($grudge-list-item-color, 5);
 
   .is-active & {
     background-color: darken($active-color, 5);
+  }
+
+  button {
+    padding: 10px;
   }
 }
 
@@ -206,17 +210,17 @@ header {
 
 .ActiveGrudge-person {
   font-weight: 600;
-  font-size: 4em;
+  font-size: 32px;
 }
 
 .ActiveGrudge-offense {
-  font-size: 3em;
+  font-size: 20px;
   min-height: 60vh;
 }
 
 .GrudgeCounts {
-  padding: 1em;
-  margin: 15px 5px;
+  padding: 5px;
+  margin: 5px;
 
   background-color: $create-grudge-color;
   border: 1px solid darken($create-grudge-color, 5);
@@ -227,5 +231,5 @@ header {
 .GrudgeCounts>li {
   list-style: none;
   padding: 15px;
-  font-weight: bold;
+  font-size: 20px;
 }
