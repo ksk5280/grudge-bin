@@ -13,8 +13,8 @@ A React project with the objective to create a list that keeps track of the peop
 
 - Users can add a new person who has wronged them to the list.
 - They can include the reason why that person is welcomed to go fly a kite.
-- By default, the person is not forgiven, however, there is be a button to forgive the monster.
-- There is also a button to re-condemn them.
+- By default, the person is not forgiven, however, there is a button to forgive the monster.
+- There is also a button to re-condemn them in case they wrong you again.
 - The person cannot be deleted from the list.
 - The list shows the following data:
   - A count of the total number of people on this list.
